@@ -8,40 +8,44 @@ NAME="snapdesk"
 VERSION="1.0.0"
 ARCH="all"
 PKG="${NAME}_${VERSION}_${ARCH}"
-DIST="dist"
+
+# NTFS/exFAT disk izin sorununu önlemek için /tmp içinde build ediyoruz
+TMPBUILD=$(mktemp -d /tmp/snapdesk_build.XXXXXX)
+PKGDIR="${TMPBUILD}/${PKG}"
+OUTDIR="$(pwd)/dist"
 
 echo "==> SnapDesk .deb paketi oluşturuluyor: ${PKG}.deb"
+echo "    Build dizini: ${PKGDIR}"
 
-# Temizle
-rm -rf "${DIST}/${PKG}"
+# Çıktı dizini
+mkdir -p "${OUTDIR}"
 
 # Dizin yapısı
-install -d "${DIST}/${PKG}/DEBIAN"
-install -d "${DIST}/${PKG}/usr/lib/${NAME}"
-install -d "${DIST}/${PKG}/usr/bin"
-install -d "${DIST}/${PKG}/usr/share/applications"
-install -d "${DIST}/${PKG}/usr/share/icons/hicolor/256x256/apps"
-install -d "${DIST}/${PKG}/usr/share/doc/${NAME}"
+install -d "${PKGDIR}/DEBIAN"
+install -d "${PKGDIR}/usr/lib/${NAME}"
+install -d "${PKGDIR}/usr/bin"
+install -d "${PKGDIR}/usr/share/applications"
+install -d "${PKGDIR}/usr/share/icons/hicolor/scalable/apps"
 
 # Python kaynak kodları
-cp -r snapdesk          "${DIST}/${PKG}/usr/lib/${NAME}/snapdesk"
-cp    main.py           "${DIST}/${PKG}/usr/lib/${NAME}/main.py"
+cp -r snapdesk   "${PKGDIR}/usr/lib/${NAME}/snapdesk"
+cp    main.py    "${PKGDIR}/usr/lib/${NAME}/main.py"
 
-# İkon
-if [ -f "snapdesk.png" ]; then
-    cp snapdesk.png "${DIST}/${PKG}/usr/share/icons/hicolor/256x256/apps/snapdesk.png"
+# İkon (SVG)
+if [ -f "snapdesk.svg" ]; then
+    cp snapdesk.svg "${PKGDIR}/usr/share/icons/hicolor/scalable/apps/snapdesk.svg"
 fi
 
 # Çalıştırılabilir wrapper
-cat > "${DIST}/${PKG}/usr/bin/${NAME}" << 'EOF'
+cat > "${PKGDIR}/usr/bin/${NAME}" << 'EOF'
 #!/bin/bash
 cd /usr/lib/snapdesk
 exec python3 -m snapdesk "$@"
 EOF
-chmod 755 "${DIST}/${PKG}/usr/bin/${NAME}"
+chmod 755 "${PKGDIR}/usr/bin/${NAME}"
 
 # .desktop dosyası
-cat > "${DIST}/${PKG}/usr/share/applications/${NAME}.desktop" << EOF
+cat > "${PKGDIR}/usr/share/applications/${NAME}.desktop" << EOF
 [Desktop Entry]
 Name=SnapDesk
 GenericName=Desktop Layout Manager
@@ -58,33 +62,17 @@ StartupNotify=true
 EOF
 
 # Copyright
-cat > "${DIST}/${PKG}/usr/share/doc/${NAME}/copyright" << EOF
+cat > "${PKGDIR}/usr/share/doc/${NAME}/copyright" << EOF
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: snapdesk
-Upstream-Contact: https://github.com/KULLANICI_ADI/snapdesk
+Upstream-Contact: https://github.com/aliafacan
 
 Files: *
 License: MIT
-
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
 EOF
 
 # DEBIAN/control
-cat > "${DIST}/${PKG}/DEBIAN/control" << EOF
+cat > "${PKGDIR}/DEBIAN/control" << EOF
 Package: ${NAME}
 Version: ${VERSION}
 Section: utils
@@ -99,33 +87,40 @@ Description: Desktop Layout Manager for Linux Mint
 EOF
 
 # DEBIAN/postinst
-cat > "${DIST}/${PKG}/DEBIAN/postinst" << 'EOF'
+cat > "${PKGDIR}/DEBIAN/postinst" << 'EOF'
 #!/bin/bash
 set -e
-# İkon cache güncelle
 if command -v gtk-update-icon-cache &>/dev/null; then
     gtk-update-icon-cache -f -t /usr/share/icons/hicolor || true
 fi
-# .desktop veritabanı güncelle
 if command -v update-desktop-database &>/dev/null; then
     update-desktop-database /usr/share/applications || true
 fi
 EOF
-chmod 755 "${DIST}/${PKG}/DEBIAN/postinst"
+chmod 755 "${PKGDIR}/DEBIAN/postinst"
 
 # DEBIAN/prerm
-cat > "${DIST}/${PKG}/DEBIAN/prerm" << 'EOF'
+cat > "${PKGDIR}/DEBIAN/prerm" << 'EOF'
 #!/bin/bash
 set -e
 EOF
-chmod 755 "${DIST}/${PKG}/DEBIAN/prerm"
+chmod 755 "${PKGDIR}/DEBIAN/prerm"
+
+# İzinleri ayarla (dpkg-deb zorunluluğu)
+chmod 755 "${PKGDIR}/DEBIAN"
+chmod 644 "${PKGDIR}/DEBIAN/control"
+chmod 644 "${PKGDIR}/DEBIAN/copyright" 2>/dev/null || true
 
 # Paket oluştur
-dpkg-deb --build --root-owner-group "${DIST}/${PKG}"
+dpkg-deb --build --root-owner-group "${PKGDIR}"
+
+# Sonucu projeye kopyala, temp dizini temizle
+cp "${TMPBUILD}/${PKG}.deb" "${OUTDIR}/${PKG}.deb"
+rm -rf "${TMPBUILD}"
 
 echo ""
-echo "==> Tamamlandı: ${DIST}/${PKG}.deb"
+echo "==> Tamamlandi: dist/${PKG}.deb"
 echo ""
-echo "Kurmak için:"
-echo "  sudo dpkg -i ${DIST}/${PKG}.deb"
-echo "  sudo apt-get install -f   # bağımlılık eksikse"
+echo "Kurmak icin:"
+echo "  sudo dpkg -i dist/${PKG}.deb"
+echo "  sudo apt-get install -f   # bagimlilik eksikse"

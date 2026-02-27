@@ -33,8 +33,7 @@
 
 ```bash
 wget https://github.com/aliafacan/snapdesk/releases/latest/download/snapdesk_1.0.0_all.deb
-sudo dpkg -i snapdesk_1.0.0_all.deb
-sudo apt-get install -f
+sudo apt install ./snapdesk_1.0.0_all.deb
 ```
 
 Kurulumdan sonra Uygulama Menüsü'nde **SnapDesk** olarak görünür.
@@ -102,8 +101,7 @@ chmod +x build_deb.sh
 
 ```bash
 wget https://github.com/aliafacan/snapdesk/releases/latest/download/snapdesk_1.0.0_all.deb
-sudo dpkg -i snapdesk_1.0.0_all.deb
-sudo apt-get install -f
+sudo apt install ./snapdesk_1.0.0_all.deb
 ```
 
 After installation, **SnapDesk** will appear in the Application Menu.
