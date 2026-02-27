@@ -1,10 +1,13 @@
 # SnapDesk
 
 <p align="center">
-  <strong>🇹🇷 Türkçe</strong> &nbsp;|&nbsp; <strong>🇬🇧 English</strong>
+  <a href="#turkce"><strong>🇹🇷 Türkçe</strong></a> &nbsp;|&nbsp;
+  <a href="#english"><strong>🇬🇧 English</strong></a>
 </p>
 
 ---
+
+<a id="turkce"></a>
 
 ## 🇹🇷 Türkçe
 
@@ -26,6 +29,20 @@
 | Python | 3.10+ |
 | python3-pyqt6 | herhangi |
 | python3-gi | herhangi |
+
+### Dağıtım Uyumluluğu
+
+| Dağıtım | Durum | Açıklama |
+|---------|-------|----------|
+| Linux Mint Cinnamon | ✅ Tam uyumlu | Birincil hedef platform |
+| Manjaro Cinnamon | ✅ Çalışır | Nemo masaüstü mevcut |
+| Fedora Cinnamon Spin | ✅ Çalışır | Nemo masaüstü mevcut |
+| Debian + Cinnamon | ✅ Çalışır | Nemo masaüstü mevcut |
+| Ubuntu (GNOME) | ❌ Çalışmaz | Nautilus kullanır |
+| Linux Mint MATE/XFCE | ❌ Çalışmaz | Nemo masaüstü yok |
+| Elementary OS | ❌ Çalışmaz | Pantheon masaüstü |
+
+> **Kural:** Cinnamon masaüstü + Nemo gerektiren uygulamalarda çalışır.
 
 ### Kurulum
 
@@ -74,6 +91,8 @@ chmod +x build_deb.sh
 
 ---
 
+<a id="english"></a>
+
 ## 🇬🇧 English
 
 > **Desktop layout manager** — Save and restore Nemo icon positions with one click on Linux Mint.
@@ -94,6 +113,20 @@ chmod +x build_deb.sh
 | Python | 3.10+ |
 | python3-pyqt6 | any |
 | python3-gi | any |
+
+### Compatibility
+
+| Distribution | Status | Notes |
+|--------------|--------|-------|
+| Linux Mint Cinnamon | ✅ Full support | Primary target platform |
+| Manjaro Cinnamon | ✅ Works | Nemo desktop available |
+| Fedora Cinnamon Spin | ✅ Works | Nemo desktop available |
+| Debian + Cinnamon | ✅ Works | Nemo desktop available |
+| Ubuntu (GNOME) | ❌ Does not work | Uses Nautilus instead |
+| Linux Mint MATE/XFCE | ❌ Does not work | No Nemo desktop |
+| Elementary OS | ❌ Does not work | Pantheon desktop |
+
+> **Rule of thumb:** Works on any distro using **Cinnamon desktop + Nemo** as the desktop manager.
 
 ### Installation
 
