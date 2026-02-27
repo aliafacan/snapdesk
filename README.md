@@ -7,6 +7,12 @@
 
 ---
 
+<p align="center">
+  <img src=".github/screenshot.png" alt="SnapDesk Screenshot" width="700"/>
+</p>
+
+---
+
 <a id="turkce"></a>
 
 ## 🇹🇷 Türkçe
